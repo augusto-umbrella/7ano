@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potência e Raiz | Lista 5</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+    <style>
+        * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(145deg, #1a2a3a 0%, #0f1a24 100%); min-height: 100vh; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; }
+        .game-container { max-width: 1300px; width: 100%; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+        .quiz-panel { flex: 2; min-width: 280px; background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-radius: 48px; padding: 24px 28px; box-shadow: 0 20px 35px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); }
+        .highscore-panel { flex: 1; min-width: 240px; background: #0f1a1f; border-radius: 40px; padding: 20px; box-shadow: 0 15px 25px rgba(0,0,0,0.5); border: 1px solid #2c4c5c; }
+        h1 { font-size: 2rem; margin: 0 0 8px; background: linear-gradient(135deg, #FFE6B0, #FFB347); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .sub { color: #b3e4ff; margin-bottom: 25px; border-left: 3px solid #ffb347; padding-left: 12px; }
+        .card-question { background: #071217c9; border-radius: 32px; padding: 20px; margin: 20px 0; border: 1px solid #ffb34755; }
+        .question-text { font-size: 1.8rem; font-weight: bold; color: #ffefcf; text-align: center; background: #00000033; padding: 15px; border-radius: 24px; overflow-x: auto; }
+        .stats { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; background: #00000066; padding: 12px 18px; border-radius: 60px; margin-bottom: 20px; }
+        .stat { background: #1e2f3a; padding: 5px 14px; border-radius: 40px; font-weight: bold; color: #ffd966; }
+        .stat span { color: white; }
+        .input-area { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .answer-input { background: #0b171f; border: 2px solid #3c6e8c; border-radius: 60px; padding: 14px 20px; font-size: 1.2rem; color: #f0f9ff; outline: none; }
+        .answer-input:focus { border-color: #ffb347; box-shadow: 0 0 12px #ffb34766; }
+        button { background: #ff914d; border: none; border-radius: 60px; padding: 12px 20px; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 0 #a34100; transform: translateY(-2px); transition: 0.05s linear; color: #1e2a2f; }
+        button:active { transform: translateY(2px); box-shadow: 0 1px 0 #a34100; }
+        button.secondary { background: #2c5f7a; box-shadow: 0 4px 0 #153e52; color: white; }
+        .feedback { background: #000000aa; border-radius: 32px; padding: 14px; margin: 18px 0 0; text-align: center; border-left: 6px solid #ffb347; color: white; }
+        .points-badge { background: #2f4858; display: inline-block; border-radius: 30px; padding: 6px 16px; font-size: 0.9rem; }
+        .highscore-list { list-style: none; padding: 0; margin: 15px 0; color: white;}
+        .highscore-list li { background: #1f2f38; margin: 8px 0; padding: 8px 15px; border-radius: 60px; display: flex; justify-content: space-between; font-weight: bold; }
+        .reset-btn { background: #4e3b2c; box-shadow: none; font-size: 0.8rem; margin-top: 15px; width: 100%; }
+        .newgame-btn { background: #38b000; box-shadow: 0 4px 0 #1f6e00; margin-top: 15px; width: 100%; }
+        .final-message { background: #0e2a2f; border-radius: 28px; padding: 15px; margin: 15px 0; text-align: center; font-weight: bold; }
+        .save-area { display: flex; gap: 10px; margin-top: 10px; }
+        .save-area input { flex: 2; background: #021016; border: 1px solid #ffb347; border-radius: 40px; padding: 8px 16px; color: white; }
+        @media (max-width: 750px) { .quiz-panel, .highscore-panel { flex: 1 1 100%; } .question-text { font-size: 1.3rem; } }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="quiz-panel">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
+            <h1>Lista 5 de Matemática</h1>
+            <div class="points-badge" id="rankingStatus">🌍 Ranking da sala</div>
+        </div>
+        <div class="sub">Potência e Raiz</div>
+        <div class="stats">
+            <div class="stat">💯 TOTAL: <span id="totalScore">0</span> pts</div>
+            <div class="stat">⭐ PERGUNTA: <span id="currentQValue">10.00</span> pts</div>
+            <div class="stat">📊 PROGRESSO: <span id="progressCounter">0</span>/<span id="totalQuestions">15</span></div>
+        </div>
+        <div class="card-question">
+            <div class="question-text" id="questionText">Carregando...</div>
+            <div class="input-area">
+                <input type="text" id="answerInput" class="answer-input" placeholder="Digite sua resposta (número ou fração ex: 1/4)">
+                <button id="submitBtn">✅ RESPONDER</button>
+                <button id="newGameBtn" class="secondary">🔄 NOVO JOGO</button>
+            </div>
+            <div id="feedback" class="feedback">✨ Cada erro reduz o valor da questão pela metade. Ranking global via Google Sheets!</div>
+        </div>
+        <div id="finalArea"></div>
+    </div>
+    <div class="highscore-panel">
+        <h2 style="font-size: 1.5rem; color: white;">🏆 HIGHSCORES</h2>
+        <ul id="highscoreList" class="highscore-list"><li>Carregando ranking...</li></ul>
+        <button id="refreshRankBtn" class="reset-btn" style="background:#2c5f7a;">🔄 ATUALIZAR RANKING</button>
+        <div style="font-size: 0.7rem; margin-top: 12px; text-align: center; color:#7f9faa;" id="rankSourceMsg">
+            📡 Conectando...
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== CONFIGURAÇÃO ==========
+    // 🔻 COLE A URL DO SEU WEB APP AQUI 🔻
+    const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbwul7qTyyjwtx1cl1AAhGKkk7u-8cJPduWtoeY5gbqyJn-J6MynIgsrU-gRXR_Smjc/exec";
+    // 🔺🔺🔺 SUBSTITUA PELA URL GERADA NO PASSO 3 🔺🔺🔺
+    
+    let rankingOnline = true; // se falhar, usa fallback localStorage
+    
+    // ========== FUNÇÕES DE RANKING ==========
+    async function carregarRanking() {
+        const listaEl = document.getElementById("highscoreList");
+        const msgEl = document.getElementById("rankSourceMsg");
+        listaEl.innerHTML = '<li>Carregando...</li>';
+        
+        try {
+            const response = await fetch(GOOGLE_SHEETS_API_URL);
+            if (!response.ok) throw new Error("HTTP " + response.status);
+            const scores = await response.json();
+            if (scores.length === 0) {
+                listaEl.innerHTML = '<li>✨ Nenhuma pontuação ainda. Seja o primeiro!</li>';
+            } else {
+                listaEl.innerHTML = scores.map((hs, idx) => 
+                    `<li><span>${idx+1}. ${hs.nome}</span><span>${hs.pontuacao.toFixed(2)} pts</span></li>`
+                ).join('');
+            }
+            msgEl.innerHTML = "🌍 Ranking da sala";
+            rankingOnline = true;
+        } catch (err) {
+            console.error("Erro ao carregar ranking online:", err);
+            // Fallback: localStorage
+            const localScores = JSON.parse(localStorage.getItem("potenciaLocalRanking") || "[]");
+            localScores.sort((a,b) => b.score - a.score);
+            if (localScores.length === 0) {
+                listaEl.innerHTML = '<li>💾 Nenhuma pontuação local. Jogue e salve!</li>';
+            } else {
+                listaEl.innerHTML = localScores.slice(0,10).map((hs, idx) => 
+                    `<li><span>${idx+1}. ${hs.name}</span><span>${hs.score.toFixed(2)} pts</span></li>`
+                ).join('');
+            }
+            msgEl.innerHTML = "💾 Ranking local (navegador) - Fallback ativado";
+            rankingOnline = false;
+        }
+    }
+    
+    async function salvarPontuacao(nome, pontuacao) {
+    try {
+        const url = `${GOOGLE_SHEETS_API_URL}?nome=${encodeURIComponent(nome)}&pontuacao=${pontuacao}`;
+        const response = await fetch(url);
+        const resultado = await response.json();
+        if (resultado.status === "ok") {
+            console.log("✅ Pontuação salva na planilha!");
+            return true;
+        } else {
+            throw new Error(resultado.message || "Erro desconhecido");
+        }
+    } catch (err) {
+        console.error("Erro ao salvar online:", err);
+        // Fallback localStorage
+        let localScores = JSON.parse(localStorage.getItem("potenciaLocalRanking") || "[]");
+        localScores.push({ name: nome, score: parseFloat(pontuacao.toFixed(2)), date: new Date().toISOString() });
+        localScores.sort((a,b) => b.score - a.score);
+        if (localScores.length > 10) localScores = localScores.slice(0,10);
+        localStorage.setItem("potenciaLocalRanking", JSON.stringify(localScores));
+        return true;
+    }
+}
+    
+    // ========== BANCO DE PERGUNTAS ==========
+const QUESTIONS_BANK = [
+        // FÁCIL
+        { text: "Calcule \\(2^{3} \\times 2^{2}\\)", answerNum: 32, difficulty: "easy" },
+        { text: "Qual é o valor de \\(3^{2} \\times 3^{3}\\)?", answerNum: 243, difficulty: "easy" },
+        { text: "Resolva \\(5^{4} \\div 5^{2}\\)", answerNum: 25, difficulty: "easy" },
+        { text: "Simplifique \\( (2^{3})^{2} \\)", answerNum: 64, difficulty: "easy" },
+        { text: "Calcule \\(7^{0} \\times 7^{2}\\)", answerNum: 49, difficulty: "easy" },
+        { text: "Determine \\(10^{5} \\div 10^{3}\\)", answerNum: 100, difficulty: "easy" },
+        { text: "Quanto vale \\( (-3)^{2} \\)?", answerNum: 9, difficulty: "easy" },
+        { text: "Resolva \\( (\\frac{1}{2})^{3} \\)", answerNum: 0.125, difficulty: "easy" },
+        { text: "Calcule \\(4^{3} \\div 4^{1}\\)", answerNum: 16, difficulty: "easy" },
+        { text: "Qual é o resultado de \\( (0.5)^{2} \\)?", answerNum: 0.25, difficulty: "easy" },
+        { text: "Calcule \\(2^3 \\times 2^4\\)", answerNum: 128, difficulty: "easy" },
+        { text: "Qual a raiz quadrada de 9?", answerNum: 3, difficulty: "easy" },
+        { text: "Resolva \\((2^2)^3\\)", answerNum: 64, difficulty: "easy" },
+        { text: "Quanto é \\(4^{-2}\\)?", answerNum: 0.0625, difficulty: "easy" },
+        { text: "Raiz quadrada de \\(16\\)", answerNum: 4, difficulty: "easy" },
+        { text: "Calcule a raiz cúbica de \\(8^{2}\\)", answerNum: 4, difficulty: "easy" },
+        { text: "Simplifique \\(2^5 / 2^3\\)", answerNum: 4, difficulty: "easy" },
+        { text: "Quanto vale \\(5^0\\)?", answerNum: 1, difficulty: "easy" },
+        { text: "Raiz cúbica de \\(27\\)", answerNum: 3, difficulty: "easy" },
+        { text: "\\(10^3 \\times 10^{-2}\\)", answerNum: 10, difficulty: "easy" },
+        { text: "Qual a raiz quarta de \\(16\\)?", answerNum: 2, difficulty: "easy" },
+        { text: "\\(0^5\\)", answerNum: 0, difficulty: "easy" },
+        { text: "\\((-2)^3\\)", answerNum: -8, difficulty: "easy" },
+        { text: "\\((-2)^2\\)", answerNum: 4, difficulty: "easy" },
+        { text: "\\(2^{-3}\\)", answerNum: 0.125, difficulty: "easy" },
+        { text: "Raiz quadrada de \\(0.25\\)", answerNum: 0.5, difficulty: "easy" },
+        { text: "Calcule \\(2^{1} \\times 2^{3}\\)", answerNum: 16, difficulty: "easy" },
+        { text: "Qual é o valor de \\(3^{1} \\times 3^{2}\\)?", answerNum: 27, difficulty: "easy" },
+        { text: "Resolva \\(4^{2} \\div 4^{1}\\)", answerNum: 4, difficulty: "easy" },
+        { text: "Simplifique \\( (5^{2})^{1} \\)", answerNum: 25, difficulty: "easy" },
+        { text: "Calcule \\(6^{0} \\times 6^{3}\\)", answerNum: 216, difficulty: "easy" },
+        { text: "Determine \\(2^{4} \\div 2^{2}\\)", answerNum: 4, difficulty: "easy" },
+        { text: "Quanto vale \\( (-4)^{2} \\)?", answerNum: 16, difficulty: "easy" },
+        { text: "Resolva \\( (\\frac{2}{3})^{2} \\)", answerNum: 4/9, difficulty: "easy" },
+        { text: "Calcule \\(10^{2} \\times 10^{1}\\)", answerNum: 1000, difficulty: "easy" },
+        { text: "Qual é o resultado de \\( (0.2)^{2} \\)?", answerNum: 0.04, difficulty: "easy" },
+        { text: "Resolva \\(3^{3} \\div 3^{1}\\)", answerNum: 9, difficulty: "easy" },
+        { text: "Simplifique \\( (2^{4})^{0} \\)", answerNum: 1, difficulty: "easy" },
+        { text: "Calcule \\(8^{0} \\times 8^{2}\\)", answerNum: 64, difficulty: "easy" },
+        { text: "Determine \\( (-5)^{2} \\)", answerNum: 25, difficulty: "easy" },
+        { text: "Resolva \\( (\\frac{3}{4})^{1} \\)", answerNum: 0.75, difficulty: "easy" },
+        { text: "Calcule \\(7^{2} \\div 7^{1}\\)", answerNum: 7, difficulty: "easy" },
+        { text: "Qual é o valor de \\(2^{2} \\times 2^{2}\\)?", answerNum: 16, difficulty: "easy" },
+        { text: "Resolva \\(9^{1} \\times 9^{1}\\)", answerNum: 81, difficulty: "easy" },
+        { text: "Simplifique \\( (10^{2})^{1} \\)", answerNum: 100, difficulty: "easy" },
+        { text: "Calcule \\(4^{0} \\times 4^{4}\\)", answerNum: 256, difficulty: "easy" },
+        { text: "Determine \\(2^{5} \\div 2^{3}\\)", answerNum: 4, difficulty: "easy" },
+        { text: "Quanto vale \\( (-6)^{2} \\)?", answerNum: 36, difficulty: "easy" },
+        { text: "Resolva \\( (\\frac{1}{5})^{2} \\)", answerNum: 0.04, difficulty: "easy" },
+        { text: "Calcule \\(10^{4} \\div 10^{2}\\)", answerNum: 100, difficulty: "easy" },
+        { text: "Qual é o resultado de \\( (0.1)^{2} \\)?", answerNum: 0.01, difficulty: "easy" },
+        { text: "Raiz quarta de \\(81\\)", answerNum: 3, difficulty: "easy" }
+    ];
+    
+    const QUESTIONS_PER_GAME = 15;
+    const BASE_POINTS = 10;
+    const PASS_THRESHOLD = 100;
+    const DIFFICULTY_CONFIG = { easy:15, medium:0, hard:0, very_hard:0 };
+    
+    let currentGame = [];
+    let currentIndex = 0;
+    let currentValue = BASE_POINTS;
+    let totalPoints = 0;
+    let gameActive = true;
+    let gameFinished = false;
+    let attempts = 0;
+    
+    // DOM elements
+    const questionEl = document.getElementById("questionText");
+    const totalSpan = document.getElementById("totalScore");
+    const qValueSpan = document.getElementById("currentQValue");
+    const progressSpan = document.getElementById("progressCounter");
+    const answerInput = document.getElementById("answerInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const newGameBtn = document.getElementById("newGameBtn");
+    const feedbackDiv = document.getElementById("feedback");
+    const finalArea = document.getElementById("finalArea");
+    const refreshRankBtn = document.getElementById("refreshRankBtn");
+    
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    
+    function getQuestionsByDifficulty() {
+        const groups = {
+            easy: QUESTIONS_BANK.filter(q => q.difficulty === "easy"),
+            medium: QUESTIONS_BANK.filter(q => q.difficulty === "medium"),
+            hard: QUESTIONS_BANK.filter(q => q.difficulty === "hard"),
+            very_hard: QUESTIONS_BANK.filter(q => q.difficulty === "very_hard")
+        };
+        const selected = [];
+        for (let [diff, need] of Object.entries(DIFFICULTY_CONFIG)) {
+            let pool = [...groups[diff]];
+            if (pool.length < need) {
+                while(pool.length < need) pool = pool.concat(groups[diff]);
+            }
+            const shuffledPool = shuffleArray(pool);
+            selected.push(...shuffledPool.slice(0, need));
+        }
+        return shuffleArray(selected);
+    }
+    
+    function renderMath() {
+        if (window.MathJax) MathJax.typesetPromise([questionEl]).catch(e=>console.log(e));
+    }
+    
+    function updateUI() {
+        if (!gameActive || gameFinished) return;
+        if (currentIndex < currentGame.length) {
+            questionEl.innerHTML = currentGame[currentIndex].text;
+            renderMath();
+            progressSpan.innerText = currentIndex;
+            qValueSpan.innerText = currentValue.toFixed(2);
+            totalSpan.innerText = totalPoints.toFixed(2);
+            let extra = document.getElementById("extraInfo");
+            if (!extra) {
+                extra = document.createElement("div");
+                extra.id = "extraInfo";
+                extra.className = "progress";
+                document.querySelector(".card-question").appendChild(extra);
+            }
+            extra.innerHTML = `🔁 tentativas: ${attempts} | dificuldade: ${currentGame[currentIndex].difficulty}`;
+        } else finishGame();
+    }
+    
+    function finishGame() {
+        if (gameFinished) return;
+        gameActive = false;
+        gameFinished = true;
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+        const finalScore = totalPoints;
+        const passed = finalScore >= PASS_THRESHOLD;
+        const percent = (finalScore / (QUESTIONS_PER_GAME * BASE_POINTS)) * 100;
+        let html = `<div class="final-message">
+            <strong>🏁 FIM DE JOGO!</strong><br>
+            🎯 Pontuação: ${finalScore.toFixed(2)} / 150<br>
+            📈 ${percent.toFixed(1)}%<br>
+            ${passed ? '✅ APROVADO! ✅' : '❌ REPROVADO ❌'}
+        </div>
+        <div class="save-area">
+            <input type="text" id="playerName" placeholder="Seu nome (ranking mundial)" maxlength="20">
+            <button id="saveRankBtn">💾 SALVAR PONTUAÇÃO</button>
+        </div>`;
+        finalArea.innerHTML = html;
+        const saveBtn = document.getElementById("saveRankBtn");
+        if (saveBtn) saveBtn.onclick = async () => {
+            const nameInput = document.getElementById("playerName");
+            let name = nameInput.value.trim();
+            if (!name) name = "Anônimo";
+            const ok = await salvarPontuacao(name, finalScore);
+            feedbackDiv.innerHTML = ok ? "🏅 Pontuação salva no ranking global!" : "❌ Erro ao salvar. Tente novamente.";
+            if (ok) carregarRanking();
+            saveBtn.disabled = true;
+        };
+        feedbackDiv.innerHTML = passed ? "Parabéns! Você atingiu a meta!" : "Que pena! Tente outra vez.";
+    }
+    
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < currentGame.length) {
+            currentValue = BASE_POINTS;
+            attempts = 0;
+            updateUI();
+            answerInput.value = "";
+            answerInput.disabled = false;
+            submitBtn.disabled = false;
+            feedbackDiv.innerHTML = "✅ Acertou! Próxima pergunta.";
+        } else finishGame();
+    }
+    
+    function parseAnswer(str) {
+        let s = str.trim().replace(/,/g, '.');
+        if (s.includes('/')) {
+            let parts = s.split('/');
+            if (parts.length === 2) {
+                let num = parseFloat(parts[0]), den = parseFloat(parts[1]);
+                if (!isNaN(num) && !isNaN(den) && den !== 0) return num/den;
+            }
+        }
+        return parseFloat(s);
+    }
+    
+    function handleAnswer() {
+        if (!gameActive || gameFinished) return;
+        const raw = answerInput.value.trim();
+        if (!raw) { feedbackDiv.innerHTML = "Digite uma resposta!"; return; }
+        const userNum = parseAnswer(raw);
+        const currentQ = currentGame[currentIndex];
+        const correct = currentQ.answerNum;
+        if (Math.abs(userNum - correct) < 0.001) {
+            totalPoints += currentValue;
+            totalSpan.innerText = totalPoints.toFixed(2);
+            feedbackDiv.innerHTML = `🎉 Correto! +${currentValue.toFixed(2)} pontos.`;
+            nextQuestion();
+        } else {
+            attempts++;
+            currentValue /= 2;
+            if (currentValue < 0.001) currentValue = 0;
+            qValueSpan.innerText = currentValue.toFixed(4);
+            feedbackDiv.innerHTML = `❌ Errado! Valor caiu para ${currentValue.toFixed(2)} pts. Tente novamente.`;
+            answerInput.value = "";
+            answerInput.focus();
+            updateUI();
+        }
+    }
+    
+    function startNewGame() {
+        currentGame = getQuestionsByDifficulty();
+        if (currentGame.length !== 15) console.warn("Ajuste nas perguntas");
+        currentIndex = 0;
+        currentValue = BASE_POINTS;
+        totalPoints = 0;
+        gameActive = true;
+        gameFinished = false;
+        attempts = 0;
+        submitBtn.disabled = false;
+        answerInput.disabled = false;
+        answerInput.value = "";
+        finalArea.innerHTML = "";
+        updateUI();
+        feedbackDiv.innerHTML = "✨ Novo jogo! Cada erro reduz o valor pela metade. ✨";
+        totalSpan.innerText = "0";
+        progressSpan.innerText = "0";
+        qValueSpan.innerText = BASE_POINTS.toFixed(2);
+    }
+    
+    // Eventos
+    submitBtn.onclick = handleAnswer;
+    newGameBtn.onclick = startNewGame;
+    refreshRankBtn.onclick = () => { carregarRanking(); feedbackDiv.innerHTML = "🔄 Ranking atualizado!"; };
+    answerInput.addEventListener("keypress", (e) => { if(e.key === "Enter") handleAnswer(); });
+    
+    // Inicialização
+    carregarRanking();
+    startNewGame();
+</script>
+</body>
+</html>
