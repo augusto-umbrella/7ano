@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f4f8ff">
+<title>Equilibra! — Monte sua balança</title>
+<style>
+:root{--ink:#20304a;--blue:#4263eb;--teal:#0f9b8e;--gold:#f5b82e;--paper:#f4f8ff;--muted:#68758c;--u:1px}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{border:0;border-radius:13px;padding:10px 14px;font-weight:800;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,input:focus-visible,.weight:focus-visible{outline:3px solid #91a7ff;outline-offset:2px}.primary{background:var(--blue);color:#fff}.soft{background:#edf1ff;color:#314fc2}.app{max-width:1000px;margin:auto;padding:16px}.top{display:flex;align-items:center;gap:12px;margin-bottom:14px}.logo{width:52px;height:52px;border-radius:17px;background:#e3eaff;display:grid;place-items:center;font-size:28px}.top h1{margin:0;font-size:clamp(1.4rem,4vw,2rem)}.top p{margin:2px 0;color:var(--muted);font-size:.92rem}.pill{margin-left:auto;background:#e4f7f2;color:#08796f;border-radius:99px;padding:7px 11px;font-weight:800;font-size:.84rem;white-space:nowrap}.panel{background:#fff;border:1px solid #e4eaf5;border-radius:21px;padding:clamp(14px,3vw,22px);box-shadow:0 8px 24px #263a5b0b;margin-bottom:14px}.hidden{display:none!important}.intro{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.intro h2,.panel>h2{margin:0 0 4px;font-size:1.2rem}.intro p{margin:0;color:var(--muted)}.panel>h2:not(:first-child){margin-top:20px}.tag{font-size:.8rem;font-weight:850;border-radius:99px;background:#f0f3fa;padding:6px 10px;color:#596781}
+.opts{display:grid;gap:10px;margin-top:10px}.opts.two{grid-template-columns:1fr 1fr}.opts.lvls{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.opt{background:#f6f8ff;border:2px solid #dce4f3;color:var(--ink);text-align:left;padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-weight:700}.opt b{font-size:1rem}.opt span{font-size:.84rem;color:var(--muted);font-weight:600}.opt[aria-pressed=true]{background:#e9eeff;border-color:var(--blue);box-shadow:0 0 0 3px #4263eb22}.opt .ex{font-family:Georgia,serif;font-style:italic;color:#314fc2;font-weight:700}
+.teacher{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin-top:17px}.teacher label{font-weight:800;display:block}.teacher small{display:block;color:var(--muted)}.teacher input{width:100%;margin-top:10px}.num{font-size:1.5rem;font-weight:900;background:#f1f4ff;border-radius:13px;padding:7px 13px;min-width:64px;text-align:center}.equation{font-size:clamp(1.25rem,4vw,1.8rem);font-weight:900;margin-top:7px}
+.scene{position:relative;background:linear-gradient(#f9fbff,#edf4ff);border-radius:18px;overflow:hidden;margin-top:12px;--u:.8px}.scene svg{width:100%;height:auto;display:block}@supports (container-type:inline-size){.scene{container-type:inline-size;--u:max(.62px,.1667cqw)}}
+.pan{fill:#b8c5f4;stroke:#8799e6;stroke-width:2}.scale-caption{font-size:16px;fill:#5b6fcf;font-weight:900}
+.dropzone{position:absolute;width:33.4%;height:44%;transform:translate(-50%,-100%);display:flex;flex-wrap:wrap-reverse;align-content:flex-start;justify-content:center;align-items:flex-end;gap:calc(var(--u)*4);border-radius:14px;padding-bottom:2px;transition:background .15s}.dropzone.over{background:#4263eb18;outline:2px dashed var(--blue)}.drop-hint{width:100%;text-align:center;color:#8792a7;font-size:max(10px,calc(var(--u)*13));margin-bottom:calc(var(--u)*4)}
+.weight-bank{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;background:#f8faff;border:2px dashed #d5def2;border-radius:16px;padding:12px;margin-top:12px}.bank-title{width:100%;font-size:.88rem;color:#5b6880;font-weight:800}.legend{width:100%;color:var(--muted);font-size:.84rem}.bank-drop{outline:2px dashed #aab8d4;background:#f2f5fc}
+.weight{--c1:#ffd25e;--c2:#e5a21b;--tx:#4a3200;--w:36;--h:34;width:calc(var(--u)*var(--w));height:calc(var(--u)*var(--h));font-size:max(11px,calc(var(--u)*16));touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;position:relative;display:inline-flex;align-items:center;justify-content:center;margin-top:10px;font-weight:900;color:var(--tx);border-radius:46% 46% 12px 12px/58% 58% 12px 12px;background:linear-gradient(160deg,var(--c1),var(--c2));border:2px solid #0003;box-shadow:inset 0 -7px 0 #0002,inset 0 3px 0 #fff6,0 3px 0 #0003;text-shadow:0 1px 0 #fff4}
+.weight::before{content:"";position:absolute;top:-11px;left:50%;width:14px;height:10px;margin-left:-7px;border-radius:8px 8px 0 0;background:var(--c2);border:2px solid #0003;border-bottom:0}
+.weight:active{cursor:grabbing}.weight.dragging{opacity:.35}
+.weight[data-value="2"]{--c1:#7fe0b6;--c2:#27a878;--tx:#06402b;--w:42;--h:38}
+.weight[data-value="5"]{--c1:#ff9f84;--c2:#e2583a;--tx:#4d1306;--w:48;--h:44}
+.weight[data-value="10"]{--c1:#b8a4ff;--c2:#7452e8;--tx:#fff;--w:56;--h:48;text-shadow:0 1px 0 #0004}
+.weight[data-value="50"]{--c1:#7ee3e8;--c2:#1ba9b5;--tx:#05393d;--w:64;--h:52}
+.weight[data-value="100"]{--c1:#ff9ac8;--c2:#d6347f;--tx:#fff;--w:72;--h:58;text-shadow:0 1px 0 #0004}
+.weight[data-value="500"]{--c1:#8a97b8;--c2:#37456b;--tx:#ffe08a;--w:84;--h:64;text-shadow:0 1px 0 #0006}
+.weight.xweight{--c1:#7f9bff;--c2:#3550d6;--tx:#fff;--w:54;--h:48;font-family:Georgia,serif;font-style:italic;font-size:max(14px,calc(var(--u)*24));font-weight:800;text-shadow:0 1px 0 #0004;border-color:#1c2f8a}
+.caps{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.caps div{background:#fbfcff;border:2px solid #e3e9f5;border-radius:14px;padding:8px 12px;display:flex;justify-content:space-between;gap:8px;font-weight:800}.caps span{color:#314fc2;font-family:Georgia,serif;font-style:italic}
+.answerrow{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}.answerrow input{flex:1;min-width:130px;border:2px solid #dce4f3;border-radius:13px;padding:11px 13px;font-size:1.1rem;font-weight:800}.answerrow input:disabled{background:#f1f3f8}.answerrow button{flex:0 0 auto}.feedback{min-height:52px;margin-top:11px;padding:11px 13px;border-radius:14px;background:#f3f6fc;color:#4d5b74;font-weight:650}.feedback.good{background:#e2f8ee;color:#087456}.feedback.hint{background:#fff4d9;color:#775300}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.tools button{background:#f0f3fa;color:#33415b}.tools button.primary{background:var(--blue);color:#fff}.footer{text-align:center;color:#7c879a;font-size:.82rem;padding:3px 10px 18px}
+@media(max-width:520px){.app{padding:10px}.opts.two{grid-template-columns:1fr}.pill{font-size:.72rem}.answerrow button{width:100%}.caps div{font-size:.9rem;padding:7px 9px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style></head>
+<body><div class="app">
+<header class="top"><div class="logo" aria-hidden="true">⚖️</div><div><h1>Equilibra!</h1><p>Arraste os pesos para a balança e descubra o valor escondido.</p></div><div class="pill" id="roundPill">Pronto para jogar</div></header>
+
+<section class="panel" id="setup">
+<h2>Como você quer jogar?</h2>
+<div class="opts two">
+<button class="opt" data-mode="friend" aria-pressed="true"><b>🤝 Desafiar amigo</b><span>Você escolhe o valor de x em segredo. O jogo cria a equação e seu amigo descobre o x.</span></button>
+<button class="opt" data-mode="challenge" aria-pressed="false"><b>🎯 Desafio</b><span>O jogo sorteia equações com um x diferente a cada rodada. Descubra usando os pesos.</span></button>
+</div>
+<h2>Dificuldade</h2>
+<div class="opts lvls">
+<button class="opt" data-level="0" aria-pressed="true"><b>Fácil</b><span class="ex">x + 3 = 10</span></button>
+<button class="opt" data-level="1" aria-pressed="false"><b>Médio</b><span class="ex">2x + 3 = 11</span></button>
+<button class="opt" data-level="2" aria-pressed="false"><b>Difícil</b><span class="ex">3x + 2 = x + 10</span></button>
+<button class="opt" data-level="3" aria-pressed="false"><b>Super difícil</b><span class="ex">2(x + 3) + 1 = x + 12</span></button>
+<button class="opt" data-level="4" aria-pressed="false"><b>Mega difícil</b><span class="ex">7(x + 85) + 40 = 4(x + 60) + 575</span></button>
+</div>
+<div id="friendBox"><div class="teacher"><div><label for="secret">Valor secreto de x</label><small id="secretHelp">Número inteiro de 1 a 20. Ele não será mostrado durante o jogo.</small><input id="secret" type="range" min="1" max="20" value="7"></div><div class="num" id="secretRead">7</div></div>
+<div class="tools"><button class="soft" id="randomize">Sortear valor</button></div></div>
+<div class="tools"><button class="primary" id="start">Começar →</button></div>
+</section>
+
+<section class="panel hidden" id="game"><div class="intro"><div><span class="tag" id="levelTag">Desafio</span><div class="equation" id="equation">x + 3 = 10</div></div><span class="tag">Arraste para mover</span></div>
+<div class="scene" id="scene"><svg viewBox="0 0 600 380" role="img" aria-label="Balança de dois pratos que inclina para o lado mais pesado.">
+<ellipse cx="300" cy="368" rx="140" ry="10" fill="#dbe5f7"/><path d="M300 90 L260 352 Q300 366 340 352 Z" fill="#5268c9"/><rect x="218" y="350" width="164" height="16" rx="8" fill="#3549a6"/>
+<g id="beam"><rect x="105" y="71" width="390" height="18" rx="9" fill="#6174cc"/></g>
+<g id="panL"><path d="M0 0 L-92 176 M0 0 L92 176" stroke="#8b9ae0" stroke-width="3" stroke-linecap="round"/><circle r="9" fill="#f5b82e"/><path class="pan" d="M-100 176 Q0 204 100 176 L88 194 Q0 222 -88 194 Z"/><text y="242" text-anchor="middle" class="scale-caption">A</text></g>
+<g id="panR"><path d="M0 0 L-92 176 M0 0 L92 176" stroke="#8b9ae0" stroke-width="3" stroke-linecap="round"/><circle r="9" fill="#f5b82e"/><path class="pan" d="M-100 176 Q0 204 100 176 L88 194 Q0 222 -88 194 Z"/><text y="242" text-anchor="middle" class="scale-caption">B</text></g>
+<circle cx="300" cy="80" r="13" fill="#f5b82e" stroke="#d69a10" stroke-width="3"/>
+<text id="balanceLabel" x="300" y="30" text-anchor="middle" font-size="16" fill="#53627e" font-weight="800">Arraste pesos para a balança</text></svg>
+<div class="dropzone" id="leftPan" data-side="left" aria-label="Prato A"></div><div class="dropzone" id="rightPan" data-side="right" aria-label="Prato B"></div></div>
+<div class="caps"><div>Lado A <span id="leftSum">—</span></div><div>Lado B <span id="rightSum">—</span></div></div>
+<div class="weight-bank" id="bank"><div class="bank-title">🧺 Banco de pesos — arraste para um dos pratos</div><div class="legend">Os pesos do banco são ilimitados. Para retirar um peso, arraste-o para fora da balança. Duplo clique (ou toque duplo) num peso o divide em pesos menores.</div></div>
+<div class="answerrow"><input id="answer" type="number" inputmode="numeric" placeholder="Deixe x sozinho e equilibrado para responder" aria-label="Sua resposta para x" disabled><button class="primary" id="check" disabled>Conferir</button></div>
+<div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+<div class="tools"><button id="hint">💡 Quero uma dica</button><button id="resetWeights">↻ Recomeçar balança</button><button id="new">Outra equação →</button><button id="back">⚙ Voltar ao início</button></div></section>
+
+<section class="panel hidden" id="finish"><div class="intro"><div><h2>Mandou bem, explorador(a)! 🎉</h2><p id="finishText"></p></div><button class="primary" id="again">Jogar novamente</button></div></section>
+<div class="footer">Funciona offline, sem cadastro e sem bibliotecas externas.</div></div>
+<script>
+(function(){
+const $=id=>document.getElementById(id),R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LV=['Fácil','Médio','Difícil','Super difícil','Mega difícil'],TOTAL=5;
+const HINTS=['Retire a mesma quantidade dos dois lados até o x ficar sozinho. Você também pode testar: com quantos pesos o x equilibra a balança?','Primeiro retire os pesos soltos dos dois lados. Depois reparta o que sobrou igualmente entre os x.','Retire o mesmo número de x dos dois lados. Depois retire os pesos soltos iguais e reparta o que sobrar.','A balança já mostra a equação com os parênteses distribuídos. Comece retirando x iguais dos dois lados, depois os pesos soltos.','Divida os pesos grandes com duplo clique para retirar quantidades exatas. Tire x iguais dos dois lados e depois os pesos soltos; use os pesos grandes para ir mais rápido.'];
+const BANK=[[1,2,5,10],[1,2,5,10],[1,2,5,10],[1,2,5,10],[1,2,5,10,50,100,500]];
+const P={500:[100,100,100,100,100],100:[50,50],50:[10,10,10,10,10],10:[5,5],5:[2,2,1],2:[1,1]};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let mode='friend',level=0,secret=7,round=1,solved=0,dragged=null,nid=1,cur=null,lastTap={},locked=false,wasReady=false,ang=0,raf=0;
+const setup=$('setup'),game=$('game'),finish=$('finish'),bank=$('bank'),left=$('leftPan'),right=$('rightPan');
+const tx=k=>k===1?'x':k+'x';
+const side=(k,n)=>[k?tx(k):'',n?String(n):''].filter(Boolean).join(' + ')||'0';
+
+/* ---------- equações ---------- */
+function gen(lv,x){let L,Rr,ls,rs;
+ if(lv===0){const a=R(1,9);L={k:1,n:a};Rr={k:0,n:x+a}}
+ else if(lv===1){const k=R(2,4),b=R(1,8);L={k,n:b};Rr={k:0,n:k*x+b}}
+ else if(lv===2){const c=R(1,3),a=c+R(1,3),b=R(1,9);L={k:a,n:b};Rr={k:c,n:b+(a-c)*x}}
+ else{const M=lv===4;let ok=false,a,c,p,q,A,B,r,s;
+  for(let t=0;t<400&&!ok;t++){a=M?R(3,9):R(3,6);c=R(2,a-1);p=M?R(8,90):R(1,5);q=M?R(0,200):R(0,6);A=a*p+q;B=A+(a-c)*x;
+   const rmax=Math.min(M?90:5,Math.floor(B/c));if(rmax<(M?8:1)||(M&&a*x+A>1000))continue;r=R(M?8:1,rmax);s=B-c*r;ok=true}
+  if(!ok){a=3;c=2;p=M?10:1;q=0;A=a*p;B=A+x;r=1;s=B-2}
+  L={k:a,n:A};Rr={k:c,n:B};ls=a+'(x + '+p+')'+(q?' + '+q:'');rs=c+'(x + '+r+')'+(s?' + '+s:'')}
+ ls=ls||side(L.k,L.n);rs=rs||side(Rr.k,Rr.n);
+ if(lv>=2&&Math.random()<.5){[L,Rr]=[Rr,L];[ls,rs]=[rs,ls]}
+ return{L,R:Rr,text:ls+' = '+rs}}
+
+/* ---------- pesos ---------- */
+function mk(v,where,isX,tpl,before){const el=document.createElement('div');el.className='weight'+(isX?' xweight':'');el.draggable=true;el.tabIndex=0;el.dataset.value=v;el.dataset.x=isX?'1':'0';el.dataset.id=nid++;if(tpl)el.dataset.bank='1';el.textContent=isX?'x':String(v);el.setAttribute('aria-label',isX?'Peso x, valor desconhecido':'Peso '+v);before?where.insertBefore(el,before):where.appendChild(el);return el}
+function compose(n,z){(level===4?[500,100,50,10,5,1]:[5,1]).forEach(d=>{for(let i=Math.floor(n/d);i>0;i--)mk(d,z);n%=d})}
+function cleanZone(z){z.querySelectorAll('.drop-hint').forEach(n=>n.remove());if(!z.children.length){const s=document.createElement('span');s.className='drop-hint';s.textContent='Solte os pesos aqui';z.appendChild(s)}}
+const ws=z=>[...z.querySelectorAll('.weight')];
+const sum=z=>ws(z).reduce((s,w)=>s+(w.dataset.x==='1'?secret:Number(w.dataset.value)),0);
+function lab(z){const all=ws(z);if(!all.length)return'—';return side(all.filter(w=>w.dataset.x==='1').length,all.filter(w=>w.dataset.x==='0').reduce((s,w)=>s+Number(w.dataset.value),0))}
+function split(w){if(!w||w.dataset.x==='1'||w.dataset.bank==='1')return;const p=P[w.dataset.value];if(!p)return;p.forEach(v=>mk(v,w.parentElement,false,false,w));w.remove();update()}
+/* x sozinho de um lado, só pesos conhecidos do outro, e balança equilibrada */
+function ready(){const a=ws(left),b=ws(right);if(!a.length||!b.length||sum(left)!==sum(right))return false;
+ const isX=w=>w.dataset.x==='1';return(a.every(isX)&&!b.some(isX))||(b.every(isX)&&!a.some(isX))}
+
+/* ---------- balança animada ---------- */
+function pose(a){const r=a*Math.PI/180,c=Math.cos(r),s=Math.sin(r);
+ $('beam').setAttribute('transform','rotate('+a+' 300 80)');
+ [[-1,'panL',left],[1,'panR',right]].forEach(([sg,id,z])=>{const x=300+sg*175*c,y=80+sg*175*s;$(id).setAttribute('transform','translate('+x+' '+y+')');z.style.left=(x/6)+'%';z.style.top=((y+188)/3.8)+'%'})}
+function swing(target){cancelAnimationFrame(raf);const from=ang,t0=performance.now();
+ if(reduce||from===target){ang=target;pose(ang);return}
+ const f=t=>{const p=Math.min(1,(t-t0)/650),e=1-Math.pow(1-p,3)*Math.cos(p*Math.PI*2.2);ang=from+(target-from)*e;pose(ang);if(p<1)raf=requestAnimationFrame(f);else{ang=target;pose(ang)}};raf=requestAnimationFrame(f)}
+
+function update(){
+ [left,right].forEach(cleanZone);
+ const d=sum(left)-sum(right);
+ $('leftSum').textContent=lab(left);$('rightSum').textContent=lab(right);
+ /* lado mais pesado desce: ângulo negativo (anti-horário) baixa o lado A */
+ swing(d===0?0:-Math.sign(d)*Math.min(12,3+Math.abs(d)*.9));
+ $('balanceLabel').textContent=d===0?'⚖️ Balança equilibrada!':d>0?'⬅️ O lado A está mais pesado':'➡️ O lado B está mais pesado';
+ const ok=ready();
+ $('answer').disabled=!ok||locked;$('check').disabled=!ok||locked;
+ $('answer').placeholder=ok?'Qual é o valor de x?':'Deixe x sozinho e equilibrado para responder';
+ if(!locked&&ok!==wasReady){wasReady=ok;const f=$('feedback');f.className='feedback'+(ok?' good':'');f.textContent=ok?'⚖️ Equilibrou com x sozinho! Agora escreva o valor de x.':'Deixe x sozinho de um lado, equilibrado só com pesos conhecidos do outro, para liberar a resposta.'}
+}
+function build(q){left.replaceChildren();right.replaceChildren();
+ for(let i=0;i<q.L.k;i++)mk(0,left,true);compose(q.L.n,left);
+ for(let i=0;i<q.R.k;i++)mk(0,right,true);compose(q.R.n,right);update()}
+function place(w,target){const fromBank=w.dataset.bank==='1';
+ if(target===bank){if(!fromBank)w.remove()}
+ else if(fromBank)mk(Number(w.dataset.value),target);
+ else if(w.parentElement!==target)target.appendChild(w);
+ update()}
+
+/* ---------- rodadas ---------- */
+function newChallenge(){
+ if(mode==='challenge')secret=[R(1,10),R(2,12),R(2,12),R(3,15),R(10,90)][level];
+ cur=gen(level,secret);locked=false;wasReady=false;
+ $('roundPill').textContent='Desafio '+round+' de '+TOTAL;
+ $('levelTag').textContent=(mode==='friend'?'Desafiar amigo':'Desafio')+' · '+LV[level];
+ $('equation').textContent=cur.text;
+ $('answer').value='';
+ build(cur);
+ $('feedback').className='feedback';$('feedback').textContent='Arraste pesos para os pratos. Deixe x sozinho de um lado, equilibrado só com pesos conhecidos do outro, para liberar a resposta.';
+}
+function start(){if(mode==='friend')secret=Number($('secret').value);round=1;solved=0;
+ bank.querySelectorAll('.weight').forEach(n=>n.remove());BANK[level].forEach(v=>mk(v,bank,false,true,bank.querySelector('.legend')));
+ setup.classList.add('hidden');finish.classList.add('hidden');game.classList.remove('hidden');ang=0;pose(0);newChallenge()}
+function end(){game.classList.add('hidden');$('finishText').textContent='Você resolveu '+solved+' de '+TOTAL+' desafios ('+LV[level]+').';finish.classList.remove('hidden')}
+function next(){if(round>=TOTAL)end();else{round++;newChallenge()}}
+function check(){if(locked||!ready())return;const raw=$('answer').value,f=$('feedback');
+ if(raw.trim()===''){f.className='feedback hint';f.textContent='Escreva o valor de x antes de conferir.';return}
+ if(Number(raw)===secret){solved++;locked=true;f.className='feedback good';f.textContent=['Isso! 🎉 Você encontrou o peso escondido.','Boa! Você usou o equilíbrio para descobrir x.','Acertou! Continue explorando as balanças.'][R(0,2)];$('answer').disabled=true;$('check').disabled=true;setTimeout(next,1400)}
+ else{f.className='feedback hint';f.textContent=round===1?'Ainda não! 💭 Olhe os pesos que equilibram x. Se houver mais de um x, quanto vale cada um?':'Tente novamente. Compare os pesos dos dois lados.'}}
+
+/* ---------- arrastar (mouse) ---------- */
+document.addEventListener('dragstart',e=>{const w=e.target.closest&&e.target.closest('.weight');if(!w)return;dragged=w;e.dataTransfer.setData('text/plain',w.dataset.id);e.dataTransfer.effectAllowed='move';w.classList.add('dragging')});
+document.addEventListener('dragend',()=>{document.querySelectorAll('.dragging').forEach(n=>n.classList.remove('dragging'));const w=dragged;dragged=null;if(w&&w.dataset.bank!=='1'&&w.isConnected){w.remove();update()}[left,right].forEach(z=>z.classList.remove('over'));bank.classList.remove('bank-drop')});
+function dropInto(t){if(!dragged)return;const w=dragged;dragged=null;w.classList.remove('dragging');t.classList&&t.classList.remove('over');place(w,t);bank.classList.remove('bank-drop')}
+[left,right].forEach(z=>{z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('over')});z.addEventListener('dragleave',e=>{if(!z.contains(e.relatedTarget))z.classList.remove('over')});z.addEventListener('drop',e=>{e.preventDefault();dropInto(z)})});
+bank.addEventListener('dragover',e=>{e.preventDefault();bank.classList.add('bank-drop')});bank.addEventListener('dragleave',()=>bank.classList.remove('bank-drop'));bank.addEventListener('drop',e=>{e.preventDefault();dropInto(bank)});
+document.addEventListener('dblclick',e=>split(e.target.closest&&e.target.closest('.weight')));
+
+/* ---------- arrastar (toque/caneta) ---------- */
+let pointer=null,clone=null,sx=0,sy=0,moved=false;
+function endPointer(){if(clone)clone.remove();clone=null;pointer=null;moved=false;[left,right].forEach(z=>z.classList.remove('over'))}
+document.addEventListener('pointerdown',e=>{const w=e.target.closest&&e.target.closest('.weight');if(!w||e.pointerType==='mouse')return;pointer=w;sx=e.clientX;sy=e.clientY;moved=false});
+document.addEventListener('pointermove',e=>{if(!pointer)return;if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)>8){moved=true;clone=pointer.cloneNode(true);clone.style.cssText='position:fixed;z-index:9999;pointer-events:none;opacity:.9;margin:0';document.body.appendChild(clone)}
+ if(clone){clone.style.left=(e.clientX-25)+'px';clone.style.top=(e.clientY-20)+'px';const el=document.elementFromPoint(e.clientX,e.clientY);[left,right].forEach(z=>z.classList.toggle('over',!!el&&z.contains(el)))}});
+document.addEventListener('pointerup',e=>{if(!pointer)return;const w=pointer,was=moved;endPointer();
+ if(!was){const now=Date.now();if(lastTap.el===w&&now-lastTap.t<400){split(w);lastTap={}}else lastTap={el:w,t:now};return}
+ const el=document.elementFromPoint(e.clientX,e.clientY),zone=el&&el.closest('.dropzone');
+ if(zone)place(w,zone);else place(w,bank)});
+document.addEventListener('pointercancel',endPointer);
+
+/* ---------- teclado ---------- */
+document.addEventListener('keydown',e=>{const w=e.target.closest&&e.target.closest('.weight');if(!w)return;const inBank=w.dataset.bank==='1';
+ if((e.key==='Enter'||e.key===' ')&&inBank){e.preventDefault();place(w,e.shiftKey?right:left)}
+ else if((e.key==='Delete'||e.key==='Backspace')&&!inBank){e.preventDefault();place(w,bank)}
+ else if(e.key==='s'&&!inBank)split(w)});
+
+/* ---------- menu inicial ---------- */
+function sync(){document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));document.querySelectorAll('[data-level]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.level)===level)));
+ $('friendBox').classList.toggle('hidden',mode!=='friend');const mx=level===4?100:20,s=$('secret');s.max=mx;if(Number(s.value)>mx)s.value=mx;$('secretRead').textContent=s.value;$('secretHelp').textContent='Número inteiro de 1 a '+mx+'. Ele não será mostrado durante o jogo.'}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;sync()}));
+document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',()=>{level=Number(b.dataset.level);sync()}));
+$('secret').addEventListener('input',()=>$('secretRead').textContent=$('secret').value);
+$('randomize').addEventListener('click',()=>{$('secret').value=R(1,Number($('secret').max));$('secretRead').textContent=$('secret').value});
+$('start').addEventListener('click',start);$('check').addEventListener('click',check);
+$('answer').addEventListener('keydown',e=>{if(e.key==='Enter')check()});
+$('hint').addEventListener('click',()=>{$('feedback').className='feedback hint';$('feedback').textContent='Dica: '+HINTS[level]});
+$('resetWeights').addEventListener('click',()=>{wasReady=false;build(cur)});
+$('new').addEventListener('click',next);
+$('back').addEventListener('click',()=>{game.classList.add('hidden');setup.classList.remove('hidden');$('roundPill').textContent='Pronto para jogar'});
+$('again').addEventListener('click',()=>{finish.classList.add('hidden');setup.classList.remove('hidden');$('roundPill').textContent='Pronto para jogar'});
+sync();pose(0);
+})();
+</script></body></html>
